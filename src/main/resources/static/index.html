@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>VoteEase — Premium Online Voting</title>
+  <meta name="description" content="VoteEase is a modern online voting system with real-time results, analytics, and secure authentication."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+  <div class="toast" id="toast"></div>
+
+  <!-- AUTH PAGE -->
+  <div id="auth-page" class="auth-page">
+    <div class="auth-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="auth-card" id="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">🗳️</div>
+        <h1>VoteEase</h1>
+        <p>Premium Online Voting System</p>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuth('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchAuth('register')">Register</button>
+      </div>
+      <form id="login-form" onsubmit="doLogin(event)">
+        <div id="lerr" class="msg-error"></div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">👤</span>
+            <input class="form-input" id="lu" placeholder="Enter your username" autocomplete="username"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input class="form-input" type="password" id="lp" placeholder="Enter your password" autocomplete="current-password"/>
+            <button type="button" class="eye-btn" onclick="togglePwd('lp',this)">👁️</button>
+          </div>
+        </div>
+        <button class="btn-primary-full" type="submit">
+          <span>Sign In</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+      <form id="register-form" style="display:none" onsubmit="doRegister(event)">
+        <div id="rerr" class="msg-error"></div>
+        <div id="rok" class="msg-success"></div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">✨</span>
+            <input class="form-input" id="rname" placeholder="Enter your full name"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">👤</span>
+            <input class="form-input" id="ru" placeholder="Choose a username"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">📧</span>
+            <input class="form-input" type="email" id="remail" placeholder="Enter your email"/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input class="form-input" type="password" id="rp" placeholder="Create a password"/>
+            <button type="button" class="eye-btn" onclick="togglePwd('rp',this)">👁️</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔒</span>
+            <input class="form-input" type="password" id="rp2" placeholder="Confirm your password"/>
+            <button type="button" class="eye-btn" onclick="togglePwd('rp2',this)">👁️</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role</label>
+          <select class="form-select" id="rrole" onchange="toggleAdminCode()">
+            <option value="voter">🗳️ Voter</option>
+            <option value="admin">🛡️ Admin</option>
+          </select>
+        </div>
+        <div class="form-group" id="admin-code-wrap" style="display:none">
+          <label class="form-label">Admin Secret Code</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon">🔑</span>
+            <input class="form-input" type="password" id="rcode" placeholder="Enter admin secret code"/>
+          </div>
+        </div>
+        <button class="btn-primary-full" type="submit">
+          <span>Create Account</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app" style="display:none">
+    <nav class="navbar">
+      <div class="nav-brand" onclick="location.reload()">
+        <span class="brand-icon">🗳️</span>
+        <span class="brand-text">Vote<span class="brand-accent">Ease</span></span>
+      </div>
+      <div class="nav-right">
+        <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+        <div class="user-chip">
+          <div class="user-avatar" id="nav-avatar"></div>
+          <div class="user-meta">
+            <span class="user-name" id="nav-username"></span>
+            <span class="user-role-badge" id="nav-role"></span>
+          </div>
+        </div>
+        <button class="btn-logout" onclick="doLogout()">
+          <span>Logout</span>
+          <span>↗</span>
+        </button>
+      </div>
+    </nav>
+    <div class="tab-bar" id="tabs"></div>
+    <main class="main-content">
+      <section class="sec" id="sec-create">
+        <div class="section-header">
+          <h2 class="section-title">Create New Poll</h2>
+          <p class="section-subtitle">Design your poll question and add options for voters</p>
+        </div>
+        <div class="glass-card">
+          <div class="form-group">
+            <label class="form-label">Poll Question</label>
+            <input class="form-input" id="ptitle" placeholder="e.g. Who should be class president?"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Options</label>
+            <div id="opts-list"></div>
+            <button class="btn btn-secondary" style="margin-top:8px" onclick="addOpt()">
+              <span>＋</span> Add Option
+            </button>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" onclick="createPoll()">🚀 Create Poll</button>
+          </div>
+          <div id="poll-msg"></div>
+        </div>
+      </section>
+      <section class="sec" id="sec-manage">
+        <div class="section-header">
+          <h2 class="section-title">Manage Polls</h2>
+          <p class="section-subtitle">Open, close, or delete your polls</p>
+        </div>
+        <div id="manage-list"></div>
+      </section>
+      <section class="sec" id="sec-vote">
+        <div class="section-header">
+          <h2 class="section-title">Active Polls</h2>
+          <p class="section-subtitle">Cast your vote on open polls</p>
+        </div>
+        <div id="vote-list"></div>
+      </section>
+      <section class="sec" id="sec-results">
+        <div class="section-header">
+          <h2 class="section-title">Live Results</h2>
+          <p class="section-subtitle">Real-time voting results with analytics</p>
+        </div>
+        <div id="results-list"></div>
+      </section>
+      <section class="sec" id="sec-history">
+        <div class="section-header">
+          <h2 class="section-title">Vote History &amp; Analytics</h2>
+          <p class="section-subtitle">Comprehensive voting statistics and records</p>
+        </div>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="glass-card">
+          <h3 class="card-title">All Vote Records</h3>
+          <div id="hist-table"></div>
+        </div>
+      </section>
+      <section class="sec" id="sec-users">
+        <div class="section-header">
+          <h2 class="section-title">Registered Users</h2>
+          <p class="section-subtitle">View and manage all system users</p>
+        </div>
+        <div id="users-list"></div>
+      </section>
+      <section class="sec" id="sec-profile">
+        <div class="section-header">
+          <h2 class="section-title">My Profile</h2>
+          <p class="section-subtitle">View your profile and update settings</p>
+        </div>
+        <div class="profile-hero" id="profile-card"></div>
+        <div class="glass-card">
+          <h3 class="card-title">🔒 Change Password</h3>
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon">🔑</span>
+              <input class="form-input" type="password" id="old-pw" placeholder="Enter current password"/>
+              <button type="button" class="eye-btn" onclick="togglePwd('old-pw',this)">👁️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon">🔒</span>
+              <input class="form-input" type="password" id="new-pw" placeholder="Enter new password"/>
+              <button type="button" class="eye-btn" onclick="togglePwd('new-pw',this)">👁️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon">🔒</span>
+              <input class="form-input" type="password" id="new-pw2" placeholder="Confirm new password"/>
+              <button type="button" class="eye-btn" onclick="togglePwd('new-pw2',this)">👁️</button>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="changePassword()">Update Password</button>
+          <div id="pw-msg"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
